@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <FileUploader @fileUploaded="handleUpload($event)"/>
+  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <FileUploader @fileUploaded="handleUpload($event)"/>
   </div>
 </template>
 
@@ -12,51 +12,63 @@ import FileUploader from './components/FileUploader.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-    FileUploader
+  HelloWorld,
+  FileUploader
   },
   data () {
-      return {
-          columns:  ["Pclass", "Sex", "SibSp", "Parch", "Embarked"],
-          dictionary: null,
-      }
+    return {
+      columns:  ["Pclass", "Sex", "SibSp", "Parch", "Embarked"],
+      dictionary: null,
+    }
   },
   computed: {
-      dataset () {
-          return { columns: this.columns, dataset: this.dictionary }
-      }
+    dataset () {
+      return { columns: this.columns, dataset: this.dictionary }
+    }
   },
   methods: {
     handleUpload($event) {
-        console.log($event);
-        let vm = this
-        this.$papa.parse($event, {
-            header: true,
-            download: true,
-            skipEmptyLines: true,
-            complete: function (results) {
-                const { data } = results;
-                vm.dictionary = data.map(el => {
-                    const newEl = []
-                    vm.columns.forEach(col => {
-                        return newEl.push(el[col]);
-                    })
-                    return newEl
-                })
-                vm.runModels()
-            }
-        })
+      console.log($event);
+      let vm = this
+      this.$papa.parse($event, {
+        header: true,
+        download: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          const { data } = results
+          vm.dictionary = data.map(el => {
+            return vm.columns.reduce(arr, col => {
+              arr.push(el[col])
+            }, [])
+          })
+          vm.runModels()
+        }
+      })
     },
     runModels() {
-        // eslint-disable-next-line no-console
-        console.log(this.dataset)
-        // return this.csv
-        // this.axios.get(api).then((response) => {
-        //   console.log(response.data)
-        // })
+      try {
+        const data = this.dataset
+        const url = 'https://server.host/peregrine'
+
+        axios.post({
+          url,
+          data,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(function(response) {
+          console.log(response);
+        })
+      } catch (error) {
+        console.error('Post error: ', error, '\n data sent: ', this.dataset)
+      }
+      // eslint-disable-next-line no-console
+      // return this.csv
+      // this.axios.get(api).then((response) => {
+      //   console.log(response.data)
+      // })
     }
   }
-
 }
 </script>
 
