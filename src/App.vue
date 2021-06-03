@@ -36,28 +36,29 @@ export default {
         skipEmptyLines: true,
         complete: function (results) {
           const { data } = results
-          vm.dictionary = data.map(el => {
-            return vm.columns.reduce(arr, col => {
+          vm.dictionary = data.map(function (el) {
+            return vm.columns.reduce((arr, col) => {
               arr.push(el[col])
+              return arr
             }, [])
           })
           vm.runModels()
         }
       })
     },
-    runModels() {
+    async runModels() {
       try {
         const data = this.dataset
-        const url = 'https://server.host/peregrine'
+        const url = 'http://0.0.0.0:8002/batch_predict'
 
-        axios.post({
-          url,
+        await this.axios.post(url, {
           data,
           headers: {
+            'Access-Control-Allow-Origin': '*',
             'Content-Type': 'multipart/form-data'
           }
         }).then(function(response) {
-          console.log(response);
+          console.log('axios response: ', response);
         })
       } catch (error) {
         console.error('Post error: ', error, '\n data sent: ', this.dataset)
