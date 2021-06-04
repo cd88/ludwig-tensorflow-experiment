@@ -51,8 +51,7 @@ export default {
         const data = this.dataset
         const url = 'http://0.0.0.0:8002/batch_predict'
 
-        await this.axios.post(url, {
-          data,
+        await this.axios.post(url, data, {
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'multipart/form-data'
