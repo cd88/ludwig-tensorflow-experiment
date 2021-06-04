@@ -1,4 +1,4 @@
-# predibase-exercise
+# ludwig tensorflow coding challenge
 
 ## Project setup
 ```
